@@ -13,4 +13,4 @@ Lecture notes will be posted here, along with additional information related to 
 - **Instructor:** Adam Topaz (email: [topaz@ualberta.ca](mailto:topaz@ualberta.ca))
 - **Lectures:** Tuesdays and Thursdays, 11am to 12:20pm (Edmonton time).
 - **Office Hours:** TBA.
-- **Webpage:** [formal-mathematics.github.io](formal-mathematics.github.io)
+- **Webpage:** [formal-mathematics.github.io](https://formal-mathematics.github.io)
