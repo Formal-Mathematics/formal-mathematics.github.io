@@ -1,8 +1,8 @@
-title: Just the Docs Template
-description: A starter template for a Jeykll site using the Just the Docs theme!
+title: Formal Mathematics
+description: A course on the formalization of mathematics, using Lean4.
 theme: just-the-docs
 
-url: https://just-the-docs.github.io
+url: https://formal-mathematics.github.io
 
 aux_links:
   Template Repository: https://github.com/just-the-docs/just-the-docs-template
