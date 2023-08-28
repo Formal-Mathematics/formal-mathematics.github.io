@@ -1,5 +1,6 @@
 ---
 title: Setup
+layout: default
 ---
 
 # Getting Started
