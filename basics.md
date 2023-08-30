@@ -17,9 +17,9 @@ We write `t : T` to indicate that `t` is a term of type `T`.
 Examples of types include the natural numbers $$\mathbb{N}$$, the rational numbers $$\mathbb{Q}$$, the type $$\mathbb{N} \to \mathbb{Q}$$ of functions from $$\mathbb{N}$$ to $$\mathbb{Q}$$, the type $$\mathbb{N} \times \mathbb{Q}$$ of pairs of natural numbers and rational numbers, etc.
 For example, we have 
 
-1. $0 : \mathbb{N}$, $1/5 : \mathbb{N}$, $\pi : \mathbb{R}$, etc.
-3. $n \mapsto n^2 : \mathbb{N} \to \mathbb{N}$, $n \mapsto 1/n : \mathbb{N} \to \mathbb{Q}$, $n \mapsto \sqrt{n} : \mathbb{N} \to \mathbb{R}$, etc.
-4. $(1, 2) : \mathbb{N} \times \mathbb{N}$, $(1, 1/2) : \mathbb{N} \times \mathbb{Q}$, etc.
+1. $$0 : \mathbb{N}$$, $$1/5 : \mathbb{N}$$, $$\pi : \mathbb{R}$$, etc.
+3. $$n \mapsto n^2 : \mathbb{N} \to \mathbb{N}$$, $$n \mapsto 1/n : \mathbb{N} \to \mathbb{Q}$$, $$n \mapsto \sqrt{n} : \mathbb{N} \to \mathbb{R}$$, etc.
+4. $$(1, 2) : \mathbb{N} \times \mathbb{N}$$, $$(1, 1/2) : \mathbb{N} \times \mathbb{Q}$$, etc.
 
 In Lean4, we have a countable hierarchy of universes for types, denoted `Type 0`, `Type 1`, `Type 2`, etc., satisfying `Type n : Type (n+1)`.
 Universes of this sort are introduced in order to avoid inconsistency arising essentially from Russell's paradox.
@@ -65,7 +65,7 @@ We will come back to the actual definitions of `True` and `False` later on.
 
 # Functions
 
-Functions in dependent type theory include the usual functions from set theory, such as $n \mapsto n^2 : \mathbb{N} \to \mathbb{N}$.
+Functions in dependent type theory include the usual functions from set theory, such as $$n \mapsto n^2 : \mathbb{N} \to \mathbb{N}$$.
 But since everything is a term, we can also have functions which take terms of a type as inputs and return types as outputs.
 This is where the word *dependent* in *dependent type theory* comes from.
 
