@@ -14,7 +14,7 @@ This is an egregious abuse of terminology, but since we're only going to use Lea
 Here is the gist: In dependent type theory, everything is a *term*, and every term has a *type*.
 We write `t : T` to indicate that `t` is a term of type `T`.
 
-Examples of types include the natural numbers $\mathbb{N}$, the rational numbers $\mathbb{Q}$, the type $\mathbb{N} \to \mathbb{Q}$ of functions from $\mathbb{N}$ to $\mathbb{Q}$, the type $\mathbb{N} \times \mathbb{Q}$ of pairs of natural numbers and rational numbers, etc.
+Examples of types include the natural numbers $$\mathbb{N}$$, the rational numbers $$\mathbb{Q}$$, the type $$\mathbb{N} \to \mathbb{Q}$$ of functions from $$\mathbb{N}$$ to $$\mathbb{Q}$$, the type $$\mathbb{N} \times \mathbb{Q}$$ of pairs of natural numbers and rational numbers, etc.
 For example, we have 
 
 1. $0 : \mathbb{N}$, $1/5 : \mathbb{N}$, $\pi : \mathbb{R}$, etc.
