@@ -1,5 +1,5 @@
 ---
-title: Types, Propositions, Functions, Relations
+title: Basics
 layout: default
 nav_order: 4
 ---
