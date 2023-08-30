@@ -42,6 +42,10 @@ It also allows users to write *tactics* which are used to help with and even aut
 It has over 300 contributors, over 1 million lines of code, and is still growing rapidly.
 Mathlib4 is maintained and developed by the Lean community.
 
+## Getting Started
+
+Please refer to the [setup](setup) page for help in getting set up with Lean4 and the related tooling.
+
 # Course Structure
 
 This course has lectures, homework assignments and a final project. 
@@ -74,7 +78,3 @@ Details about the project will be discussed in class.
 ## Grade distrubtion
 
 The final grade for this course will be based on the homework assignments (50%) and the final project (50%).
-
-# Getting Started
-
-Please refer to the [setup](setup) page for help in getting set up with Lean4 and the related tooling.

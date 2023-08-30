@@ -23,9 +23,13 @@ This game is an excellent beginner-friendly introduction to the mechanics of int
 
 Here is a short list of resources which may be useful.
 
-1. [This webpage.](https://formal-mathematics.github.io)
 2. [The Lean community webpage.](https://leanprover-community.github.io/)
 3. [The lean zulip channel.](https://leanprover.zulipchat.com/)
 4. [Theorem proving in Lean4.](https://leanprover.github.io/theorem_proving_in_lean4/)
 5. [Mathematics in Lean.](https://leanprover-community.github.io/mathematics_in_lean/)
 6. [The official Lean4 documentation.](https://leanprover.github.io/lean4/doc/)
+
+# Course Resources
+
+1. [This webpage.](https://formal-mathematics.github.io)
+2. [The course repository](https://github.com/formal-mathematics/formalization-of-mathematics)
