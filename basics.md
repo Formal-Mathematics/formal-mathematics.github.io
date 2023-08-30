@@ -78,7 +78,7 @@ Namely, given any `t : T`, we have a type `U t : Type v`.
 
 We can then consider the sigma type associated to this type family.
 Explicitly, it is the type `Σ t : T, U t`, which is the type of pairs `(t, u)` where `t : T` and `u : U t`.
-Mathematically speaking, you can think of this as the disjoint union $$\bigcoprod_{t : T} U t$$ of all the types `U t` for `t : T`.
+Mathematically speaking, you can think of this as the disjoint union $$\coprod_{t : T} U t$$ of all the types `U t` for `t : T`.
 
 Note that there is a well-defined map `p : Σ t : T, U t -> T` sending `(t, u)` to `t`.
 Sections of this map are precisely the dependent functions `f : (t : T) -> U t`.
