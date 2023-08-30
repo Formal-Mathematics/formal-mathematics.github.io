@@ -28,8 +28,9 @@ Here is a short list of resources which may be useful.
 4. [Theorem proving in Lean4.](https://leanprover.github.io/theorem_proving_in_lean4/)
 5. [Mathematics in Lean.](https://leanprover-community.github.io/mathematics_in_lean/)
 6. [The official Lean4 documentation.](https://leanprover.github.io/lean4/doc/)
+7. [The Hitchhiker’s Guide to Logical Verification](https://raw.githubusercontent.com/blanchette/logical_verification_2021/main/hitchhikers_guide.pdf)
 
-# Course Resources
+# Course Specific Resources
 
 1. [This webpage.](https://formal-mathematics.github.io)
 2. [The course repository](https://github.com/formal-mathematics/formalization-of-mathematics)
