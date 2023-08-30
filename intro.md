@@ -74,3 +74,7 @@ Details about the project will be discussed in class.
 ## Grade distrubtion
 
 The final grade for this course will be based on the homework assignments (50%) and the final project (50%).
+
+# Getting Started
+
+Please refer to the [setup](setup) page for help in getting set up with Lean4 and the related tooling.
