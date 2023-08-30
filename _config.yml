@@ -4,4 +4,6 @@ theme: just-the-docs
 
 url: https://formal-mathematics.github.io
 
+math: mathjax
+
 aux_links:
