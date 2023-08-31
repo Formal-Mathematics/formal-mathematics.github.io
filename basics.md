@@ -30,7 +30,7 @@ You can think of the types `T` in `Type 0` as analogous to "sets" in usual set t
 
 We will see various ways of constructing types soon, but I'll mention a few here: 
 1. Products: if `T : Type u` and `U : Type v`, then `T × U : Type (max u v)` is the type of pairs `(t, u)` where `t : T` and `u : U`. 
-2. Disjoint unions: if `T : Type u` and `U : Type v`, then `T ⊕ U : Type (max u v)` is the type of pairs `(t, u)` where `t : T` and `u : U`.
+2. Disjoint unions: if `T : Type u` and `U : Type v`, then `T ⊕ U : Type (max u v)` is the disjoint union of `T` and `U`, i.e. its terms are either terms of `T` or terms of `U`.
 3. Functions: if `T : Type u` and `U : Type v`, then `T -> U` is the type of functions from `T` to `U`.
 4. Dependent functions: if `T : Type u` and `U : T -> Type v`, then `(t : T) -> U t` is the type of functions which send `t : T` to a term of `U t`.
 5. Sigma types: if `T : Type u` and `U : T -> Type v`, then `Σ t : T, U t` is the type of pairs `(t, u)` where `t : T` and `u : U t`.
@@ -52,12 +52,12 @@ In a naive sense, if a proposition has a proof, then we say that it is *true*, a
 
 With the Curry-Howard correspondence in mind, we can view the usual logical operations in terms of type theory, as follows:
 
-1. Conjunction: `P ∧ Q` is the type of pairs `(p, q)` where `p : P` and `q : Q`, i.e. this is just the type-theoretic *product*.
-2. Disjunction: `P ∨ Q` is the type of pairs `(b, p)` where `b : Bool` and `p : if b then P else Q`, i.e. this is just the type-theoretic *disjoint union*. 
-3. Implication: `P → Q` is the type of functions `f : P → Q`, i.e. this is just the type-theoretic *function type*.
-4. Universal quantification: `∀ x : T, P x` is the type of functions `f : (x : T) → P x`, i.e. this is just the type-theoretic *dependent function type*.
-5. Existential quantification: `∃ x : T, P x` is the type of pairs `(t, p)` where `t : T` and `p : P t`, i.e. this is just the type-theoretic *sigma type*.
-6. Negation: `¬ P` is defined as `P → False`, where `False` is the proposition with no proofs. 
+1. Conjunction: A proof of `P ∧ Q` is a pair `(p, q)` where `p : P` and `q : Q`. I.e. this is just the type-theoretic *product*.
+2. Disjunction: A proof of `P ∨ Q` is either a proof of `P` or a proof of `Q`. I.e. this is just the type-theoretic *disjoint union*.
+3. Implication: A proof of `P → Q` is a function `f : P → Q`. I.e. this is just the type-theoretic *function type*. 
+4. Universal quantification: A proof of `∀ x : T, P x` is a dependent function `f : (t : T) → P t`. I.e. this is just the type-theoretic *dependent function type*.
+5. Existential quantification: A proof of `∃ x : T, P x` is a pair `(t, h)` where `t : T` and `h : P t`. I.e. this is just the type-theoretic *sigma type*.
+6. Negation: A proof of `¬ P` is a function `f : P → False`. I.e. this is just a special case of the type-theoretic *function type*.
 
 In item 6 we mentioned the proposition `False`, which is false by construction.
 There is also a proposition `True` which is true by construction.
