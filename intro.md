@@ -57,6 +57,11 @@ All lectures will be conducted using zoom.
 While this is an *online* course, there is a room reserved for the course which students may use in order to attend lectures while on campus.
 I will also be physically present and lecture from this room, at least once a week.
 
+Lectures will use the following zoom information:
+
+- Meeting ID: 871 543 1947
+- Passcode: Contact the instructor for access to the passcode
+
 ## Assignments
 
 Homework assignments will be assigned periodically throughout the term, using github classroom.
