@@ -8,7 +8,7 @@ This page contains links to recordings of lectures for Math 681, Fall 2023.
 The password listed here must be decrypted before use.
 To do this, you must be within our [main course repository](https://github.com/formal-mathematics/formalization-of-mathematics), and use the command 
 
-```lean
+```bash
 lake exe crypt d 'key' 'encrypted_password'
 ```
 
