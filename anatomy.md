@@ -54,3 +54,79 @@ To build a project, you use `lake build` in the root directory of the project (t
 The lakefile can also specify lake executables which can be run with `lake exe ...` (`cache` is such an executable which is part of `mathlib` itself).
 This tool has various other capabilities as well, and we will discuss them as necessary.
 
+## Opening a project
+
+When working with a Lean project in an editor (such as VScode) it is crucial that you open the project's root directory (the one containing the lakefile).
+*DO NOT OPEN A SINGLE LEAN FILE ON ITS OWN*.
+
+# The Anatomy of a Lean File
+
+Let's take a closer look at what goes on in an individual lean file.
+
+## Copyright and comments
+At the top of the file we usually have a copyright notice as a multiline comment.
+This looks like this:
+```lean
+/-
+Copyright (c) 2023 Joe Shmoe. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joe Shmoe, Jane Doe
+-/
+```
+Note that multiline comments in Lean are delimited by `/-` and `-/`, while single line comments are delimited by `--`:
+```lean
+/-
+A multiline comment.
+Another line.
+-/
+
+-- A single line comment.
+```
+There are two other kinds of comment blocks which we will discuss later.
+
+## Imports
+
+Right after the copyright notice, we have a collection of import commands.
+For example:
+
+```lean
+import Mathlib.Data.Nat.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Lean.Data.Json.Parser
+```
+
+These import commands are used to import Lean files from other Lean projects, or other files from within the current project.
+
+After the imports, we have the main body of the file, which contains definitions, theorems, etc.
+
+## Docstrings
+
+As mentioned above, there are two additional kinds of comment blocks in Lean.
+They are delimited by `/-!` and `-/`, and `/--` and `-/`.
+The first one, `/-! ... -/` is commonly used for the module docstring.
+This comment block accepts markdown, and is used to describe the contents of the file.
+It usually comes right after the imports, and looks like this:
+
+```lean
+/-!
+
+# Markdown Title
+
+Markdown text.
+
+## Subheading
+
+Etc.
+
+-/
+```
+
+The other kind of comment block, `/-- ... -/` is used for docstrings for definitions, theorems, etc.
+For example:
+```lean
+/-- The meaning of life. -/
+def theMeaningOfLife : Nat := 42
+```
+
+We use these two kinds of comment blocks to generate documentation for our code.
+You can find the automatically generated documentation for `mathlib` at [this link](https://leanprover-community.github.io/mathlib4_docs/).
