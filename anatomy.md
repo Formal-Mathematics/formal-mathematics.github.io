@@ -130,3 +130,52 @@ def theMeaningOfLife : Nat := 42
 
 We use these two kinds of comment blocks to generate documentation for our code.
 You can find the automatically generated documentation for `mathlib` at [this link](https://leanprover-community.github.io/mathlib4_docs/).
+
+# What happens in a Lean File?
+
+Let's take a closer look at what happens in an actual lean file.
+When we open a lean file in an editor like VSCode, a language server is spawned which lets us interact with the code in the given file in real time (this assumes that the Lean4 package has been properly installed).
+At the top (after a copyright header) we have the imports of the file.
+The server then uses these imports to obtain an `Environment`, which contains all the information (definitions, lemmas, etc.) from the imports.
+
+We can interact with this environment explicitly using metaprogramming. 
+I will demonstrate this in class.
+
+After the import portion of the file, we start writing commands.
+At the end of the day, these commands all define terms which have some names, and which are added to the environment in question.
+After each command, the environment could be different!
+
+But what actually happens when Lean (or the Lean Language Server) processes a file?
+Well, first it looks at the imports and obtains an initial environment (along with messages, etc.).
+It does this by first parsing the import lines, and using a precompiled version of the files in question.
+If there is no precompiled version, then it compiles the imports (which amounts to recursively doing what I describe below).
+
+Next, it parses the actual code into `Syntax` objects.
+Here `Syntax` is a built-in type in Lean that we can work with as a first-class citizen in the language.
+This is a formal representation of the code itself that Lean can work with.
+
+After that, there is a macro expansion step.
+In Lean4, we can write macros that convert `Syntax` into `Syntax`.
+Custom notation is an example of a macro.
+
+After that comes the main step, which is called "elaboration."
+In this step, Lean tried to fill in missing information, such as implicit variables, typeclass parameters, etc.
+It also does some "unification," checking that certain things are definitionally equal.
+This step also converts tactics into actual terms -- you can think of tactics as scripts that instruct Lean in constructing actual terms.
+It also tries to detect and report all possible errors. 
+At the end of this step, the `Syntax` objects mentioned above are converted into "fully elaborated terms" which are elements of an expression type called `Expr`. 
+Again, this is a built-in Lean type that can be handled as a first-class citizen.
+
+From here, the fully elaborated terms of `Expr` are passed to the kernel of the language for typechecking.
+The kernel is actually responsible for checking that definitions and proofs are correct.
+
+The Lean kernel is purposefully kept as small as possible, so that it is easier to verify the correctness of the program.
+On the other hand, the elaboration process is much more complex, and may have bugs. 
+It does happen (infrequently) that a fully elaborated term is passed to the kernel, only to be rejected. 
+This indicates that there is a bug in some elaborator which should be fixed. 
+
+We wont't have to worry about all these internals for this course.
+However, if you plan to do any metaprogramming in Lean (and I recommend that you do), such as writing custom tactics, etc., then understanding the internals is quite important.
+
+
+
