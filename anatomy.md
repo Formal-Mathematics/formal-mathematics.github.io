@@ -177,5 +177,145 @@ This indicates that there is a bug in some elaborator which should be fixed.
 We wont't have to worry about all these internals for this course.
 However, if you plan to do any metaprogramming in Lean (and I recommend that you do), such as writing custom tactics, etc., then understanding the internals is quite important.
 
+# Commands
 
+Here is a description of the main commands in Lean4 (others exist and we will encounter them as we go along with the course).
 
+## `def`
+
+The `def` command is used to define terms.
+For example:
+
+```lean
+def foo : Nat := 42
+```
+
+This defines a term called `foo` of type `Nat` with value `42`, and adds it to the environment.
+
+## `theorem` / `lemma` 
+
+The `theorem` and `lemma` commands are used to prove theorems (which means providing terms of propositions).
+For example:
+
+```lean
+theorem foo : 1 + 1 = 2 := by
+  rfl
+```
+
+This defines a term called `foo` of type `1 + 1 = 2`, and adds it to the environment.
+Mathematically, think of `foo` as the name of the proof that `1 + 1 = 2`.
+
+We can actually use `def` to define theorems as well, but it is better to use `theorem` or `lemma` for this purpose, for various reasons which we don't need to go into right now.
+
+## `example`
+
+The `example` command is used to provide examples of terms.
+It can be used for terms of any type or proposition.
+The difference between `example` and `theorem`/`lemma` is that `example` does not add the term to the environment, and thus `example` doesn't require a name for the term.
+
+For example:
+
+```lean
+example : 1 + 1 = 2 := by
+  rfl
+```
+
+## `#check`
+
+We have already encountered the `#check` command during lecture.
+It is used to check the type of a term.
+For example:
+
+```lean
+
+#check 1 + 1
+#check 1 + 1 = 2
+#check Nat
+```
+
+This doesn't do anything to the environment.
+
+## `#eval`
+
+The `#eval` command is used to evaluate a term.
+For example:
+
+```lean
+
+#eval 1 + 1
+
+def foo : Nat := 42
+
+#eval foo
+```
+
+This doesn't do anything to the environment.
+
+## `#print`
+
+The `#print` command is used to print the definition of a term.
+For example:
+
+```lean
+
+def foo : Nat := 42
+
+#print foo
+```
+
+This doesn't do anything to the environment.
+
+## `#reduce`
+
+The `#reduce` command is used to reduce a term to normal form.
+For example:
+
+```lean
+
+def foo : Nat := 42
+
+#reduce foo + 1
+```
+
+This doesn't do anything to the environment.
+
+The difference between `#eval` and `#reduce` is that `#eval` will evaluate a term to a value (i.e. it will run the code), while `#reduce` will only reduce it to normal form.
+
+Here is an example where they have different behaviour:
+    
+```lean
+#eval show IO Unit from IO.println "hello world"
+#reduce show IO Unit from IO.println "hello world"
+```
+
+## `#help`
+
+The `#help` command is used to get help about various things.
+It's quite intuitive, just write `#help` and follow the instructions.
+For example, to get help about tactics you can use
+```lean
+#help tactic
+#help tactic intro
+```
+
+# The Infoview
+
+The infoview is a panel in VSCode which displays information about the current Lean file.
+It should show up automatically when you open a Lean file.
+We use the infoview to keep track of the context (i.e. the local variables) and the current goal (i.e. the proposition that we are trying to prove).
+It also displays messages, including error messages, etc.
+
+## Goals
+
+Whenever there is some piece of information that Lean cannot infer automatically, it will display it as a goal.
+Each goal has an associated context, which may include variables that have been introduced, typeclass assertions, etc.
+
+The infoview displays a goal and its associted local context as follows:
+```lean
+n : Nat
+h : n = 0
+⊢ n = 0
+```
+The stuff before `⊢` is the context, and the stuff after `⊢` is the goal.
+Here the context says: we have a natural number `n` and a proof/term `h` for `n = 0`.
+And our goal is to provide a proof/term for `n = 0`.
