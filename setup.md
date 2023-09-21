@@ -34,3 +34,9 @@ Here is a short list of resources which may be useful.
 
 1. [This webpage.](https://formal-mathematics.github.io)
 2. [The course repository](https://github.com/formal-mathematics/formalization-of-mathematics)
+
+# Other Useful Links
+
+Please let me know if you would like for me to add any additional links in this section.
+
+1. [A list of unicode shortcuts in VSCode](https://github.com/leanprover/vscode-lean4/blob/master/vscode-lean4/src/abbreviation/abbreviations.json)
