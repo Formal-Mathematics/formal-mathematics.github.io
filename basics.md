@@ -107,3 +107,9 @@ We can play a similar game to model relations.
 A relation on a type `T` is just a function `R : T -> T -> Prop`.
 Given `t1, t2 : T`, we obtain a proposition `R t1 t2 : Prop`, which may or may not be true.
 If `R t1 t2` is true, then we say that `t1` is *related* to `t2` by `R`, and say that `t1` is *unrelated* to `t2` by `R` if `R t1 t2` is false.
+
+## Sets
+
+If `X` is a type, one defines `Set X` as `X -> Prop`, which should be thought of as the type of subsets of `X`, as discussed above.
+Inclusions among subsets is given by implication of predicates, intersection is universal quantification, unions is existential quantification, binary intersection is conjunction and binary unions is disjunction.
+We will revisit this concept soon when we discuss order, posets, lattices, etc., as `Set X` is one of the most important exampls of such objects.
