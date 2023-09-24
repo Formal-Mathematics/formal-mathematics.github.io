@@ -4,6 +4,8 @@ layout: default
 nav_order: 7
 ---
 
+# Structures
+
 A structure is a way to bundle together (possibly interrelated) data.
 For example, the sigma type associated to a family `X : A -> Type` is an example of a structure, defined as follows:
 
@@ -197,3 +199,32 @@ Thus a term of `Subtype S`, for `S : Set X`, consists of a term `val : X` togeth
 To obtain the "inclusion" from this type to `X`, one just uses the `val` projection.
 
 Note: This kind of structure is part of Lean itself, so if you try to redefine it with the name `Subtype`, lean will complain.
+
+## The anonymous constructor
+
+Lean has an anonymous constructor notation that lets us construct terms of structures.
+Here is an example:
+
+```lean
+import Mathlib.Data.Nat.Basic
+
+structure Thing where
+  a : ℕ
+  f : ℕ → ℕ 
+  hf : ∀ x : ℕ, x < f x + a
+
+example : Thing := 
+  ⟨1, Nat.succ, fun x => by rw [Nat.lt_succ] ; apply Nat.le_succ⟩ 
+
+structure TwoNats where 
+  a : ℕ
+  b : ℕ
+
+example : TwoNats := ⟨10, 5⟩
+```
+
+If the structure has `n` fields, then you will need to use `⟨_, _, ..., _⟩`
+with `n` underscores filled in appropriately to construct a term of the structure.
+
+What I like to do in practice, you start by writing `⟨⟩` and then add underscores until the errors show that I have the right number of them. 
+Then I use the infoview to determine the type of each underscore, and fil it in from there.
