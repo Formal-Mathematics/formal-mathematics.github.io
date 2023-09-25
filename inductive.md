@@ -154,6 +154,7 @@ inductive MyList (α : Type) where
 This is the type of lists of terms of `α`.
 Such a list is either empty (`nil`), or has the form `cons x xs` where `x : α` and `xs : MyList α`.
 Think of `cons x xs` as sticking `x` on the left of `xs` to obtain a list whose length is increased by one.
+Note that the inductive type `MyList` is parameterized by a type `(α : Type)`.
 
 We can construct the length function on `MyList` by recursion as follows:
 ```lean
