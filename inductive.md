@@ -341,3 +341,156 @@ example (a b : α) (h : Quotient.mk S a = Quotient.mk S b) : S.r a b :=
   Quotient.exact h
 ```
 Note that there is `EqvGen` in sight.
+
+# Inductive Proofs
+
+Let's now look at how to prove things about inductive types.
+The main tactics in this context are `cases` and `induction`:
+
+1. `cases` splits a goal into one goal for each constructor of the inductive type.
+2. `induction` is similar, but it also adds inductive hypotheses for each recursive argument of the constructor.
+
+First, let's look at an example using `cases`.
+We will construct a permutation of `Bool` which interchanges `true` and `false`.
+Equivalences in Lean are a structure with four fields: the function in the forward direction, the function in the backward direction, and two proofs saying that they are inverses to eachother.
+
+```lean
+import Mathlib.Logic.Equiv.Basic
+
+def swap : Bool ≃ Bool where
+  toFun := _
+  invFun := _
+  left_inv := _
+  right_inv := _
+```
+
+We can use pattern matching to construct `toFun` and `invFun`:
+```lean
+import Mathlib.Logic.Equiv.Basic
+
+def swap : Bool ≃ Bool where
+  toFun 
+    | true => false
+    | false => true
+  invFun 
+    | true => false
+    | false => true
+  left_inv := _
+  right_inv := _
+```
+
+Now let's uses `cases` in the two missing proofs.
+```lean
+import Mathlib.Logic.Equiv.Basic
+
+def swap : Bool ≃ Bool where
+  toFun 
+    | true => false
+    | false => true
+  invFun 
+    | true => false
+    | false => true
+  left_inv := by
+    intro x
+    cases x with
+    | false => rfl
+    | true => rfl
+  right_inv := by
+    intro x
+    cases x with
+    | false => rfl
+    | true => rfl
+```
+
+Note that once we case split on `x : Bool`, the two goals are true *by definition*, hence the use of `rfl`.
+
+Now let's look at an example using `induction`.
+I'll use the construction of the constant list of size `n` from above, except I will use Lean's built-in `List` type.
+I will then prove that the length of this list is actually `n`, using induction.
+```lean
+import Mathlib.Data.List.Basic
+
+def List.zeros : ℕ → List ℕ 
+  | 0 => []
+  | n+1 => 0 :: List.zeros n
+
+example (n : ℕ) : (List.zeros n).length = n := sorry
+```
+
+Note that the `length` function for lists is defined recursively as follows:
+```lean
+def List.length : List α → Nat
+  | nil       => 0
+  | cons _ as => HAdd.hAdd (length as) 1
+```
+
+Let's start the proof:
+```lean
+example (n : ℕ) : (List.zeros n).length = n := by
+  induction n with
+  | zero => sorry
+  | succ n ih => sorry
+```
+
+The first case is our base case. 
+Note that the length of the empty list is *defined* to be zero, and thus we can close the first goal with `rfl`.
+
+```lean
+example (n : ℕ) : (List.zeros n).length = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => sorry
+```
+
+For the second `sorry`, we have to actually use the inductive hypothesis.
+The goal state at that sorry is as follows:
+```lean
+n: ℕ
+ih: List.length (List.zeros n) = n
+⊢ List.length (List.zeros (Nat.succ n)) = Nat.succ n
+```
+
+Recall that `List.zeros (Nat.succ n)` is defined as `0 :: List.zeros n`.
+Let's write an auxiliary lemma to help us here.
+```lean
+lemma List.zeros_zero (n : ℕ) : List.zeros (n+1) = 0 :: List.zeros n := rfl
+```
+We can now use this in our main proof:
+```lean
+example (n : ℕ) : (List.zeros n).length = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => 
+    rw [List.zeros_zero]
+    sorry
+```
+The goal state at the sorry is now
+```lean
+n: ℕ
+ih: List.length (List.zeros n) = n
+⊢ List.length (0 :: List.zeros n) = Nat.succ n
+```
+
+Now we use a lemma from the library called `List.length_cons`:
+```lean
+example (n : ℕ) : (List.zeros n).length = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => 
+    rw [List.zeros_zero, List.length_cons]
+    sorry
+```
+Our state is now
+```lean
+n: ℕ
+ih: List.length (List.zeros n) = n
+⊢ Nat.succ (List.length (List.zeros n)) = Nat.succ n
+```
+And finally we can use our inductive hypothesis to solve the goal:
+```lean
+example (n : ℕ) : (List.zeros n).length = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => 
+    rw [List.zeros_zero, List.length_cons, ih]
+```
