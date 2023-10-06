@@ -223,3 +223,75 @@ example (X Y Z W : Type) [Inhabited' X] [Inhabited' W] :
 ```
 
 By placing the cursor over the `inferInstance` line, it will be possible to see the trace in the infoview. 
+
+## `outParam`s
+
+When a typeclass has a parameter, we generally think of this as an "input" for the typeclass system.
+This is usually fine, as long as the typeclass system can infer the parameter from context.
+For example, if the typeclass system is looking for a monoid instance on some type `M`, then it can infer `M` from since it is a parameter of the `Monoid` class.
+Expliitly, a monoid structure on `M` is a term of `Monoid M`, so the type of this term tells the typeclass sytem what `M` is.
+
+But there are some situations where it's impossible for the typeclass system to infer the parameter.
+This usually happens when there is more than one parameter for the typeclass.
+
+Consider the following class:
+```lean
+class F (A B : Type) where
+  f : A → B
+```
+Let's suppose that we instantiate an instance as follows:
+```lean
+instance : F ℕ ℕ where
+  f := id
+```
+If we want to use an instance of `F A B`, Lean would have to know what both `A` and `B` are.
+For example, the following will *fail*:
+```lean
+example (n : ℕ) := F.f n
+```
+The reason is that when Lean sees `F.f n`, it knows that it should look for a typeclass instance of the form `F ℕ _`, but it has no way of knowing what the second parameter (`_`) should be.
+We can fix the example above by telling Lean explicitly what to expect, using one of the following approaches:
+```lean
+example (n : ℕ) : ℕ := F.f n
+example (n : ℕ) := (F.f n : ℕ) 
+```
+
+But niether is ideal.
+It's certainly not ideal to always tell Lean the output type of `F.f n`, and we may want to use `F.f n` as a subterm of some more complicated expression.
+
+The solution to this is to use an `outParam`. 
+Replace the class above with this:
+```lean
+class F (A : Type) (B : outParam Type) where
+  f : A → B
+```
+The `outParam` keyword only affects typeclass inference.
+What it does is tell Lean to immediately infer the second parameter of `F` when it has found an instance.
+So now when we write
+```lean
+example (n : ℕ) := F.f n
+```
+Lean will find the instance `F ℕ ℕ` and then immediately infer that the second parameter should also be `ℕ`.
+
+The example above is quite contrived, but there are many situations where `outParam` is useful.
+As an explicit example from `mathlib`, lets consider the `Valued` class which is used to define valued rings/fields.
+```lean
+class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v)) [LinearOrderedCommGroupWithZero Γ₀] 
+...
+```
+Note that `Γ₀`, which is the underlying type of the value group associated to the valuation in question, is an `outParam`.
+In this way, we can write `Valued.v r` for `r : R` without any further hints, assuming there is some instance of the form `Valued R Γ₀` for some `Γ₀`.
+
+Another example from `mathlib`:
+```lean
+class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G]
+...
+```
+This class is used to say that a type `P` is an additive torsor under an additive group `G`.
+Note that `G` and its additive group structure are both `outParam`s here.
+That means that if we fix `P`, and Lean is able to find an instance of `AddTorsor G P` for some `G` and some additive group structure on `G`, then Lean will immediately use that instance.
+This means that we can write `p -ᵥ q` for `p q : P` without having to provide any additional information.
+Similarly, we can write `g +ᵥ p` for `p : P` and `g : G` without having to provide any additional information.
+
+Many other examples of uses of `outParam` can be found in `mathlib`.
+We will discuss several more in the section about the various hierarchies in `mathlib`.
