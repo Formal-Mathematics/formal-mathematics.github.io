@@ -1,5 +1,5 @@
 ---
-title: Classes
+title: Algebra in Lean
 layout: default
 nav_order: 11
 ---
