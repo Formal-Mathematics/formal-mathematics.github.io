@@ -28,7 +28,97 @@ In some situations this means that the classes we consider will involve addition
 Let's look at a simplistic example of this issue and how it is resolved with forgetful inheritance.
 
 ```lean
-TODO
+import Mathlib.Init.ZeroOne
+import Mathlib.Data.Prod.Basic
+
+class Monoid (X : Type) extends Mul X, One X where
+  assoc : ∀ (x y z : X), x * y * z = x * (y * z)
+  mul_one : ∀ (x : X), x * 1 = x
+  one_mul : ∀ (x : X), 1 * x = x
+
+instance MonoidToPow {X : Type} [Monoid X] : Pow X Nat where
+  pow := aux
+    where aux
+    | _, 0 => 1
+    | x, n + 1 => x * aux x n
+
+variable (X Y : Type) [Monoid X] [Monoid Y]
+
+instance : Monoid (X × Y) where
+  mul := fun (a,b) (c,d) => (a * c, b * d)
+  one := (1,1)
+  assoc := sorry
+  mul_one := sorry
+  one_mul := sorry
+
+
+def foo : Pow (X × Y) Nat := inferInstance
+
+def bar : Pow (X × Y) Nat where
+  pow := fun (x,y) n => {
+    fst := 
+      letI : Pow X Nat := MonoidToPow
+      x^n
+    snd := 
+      letI : Pow Y Nat := MonoidToPow
+      y^n
+  }
+
+attribute [ext] Pow
+
+example : foo = bar := by
+  ext A B _ _ ⟨x,y⟩ n
+  · show ((x,y)^n).fst = x^n
+    sorry
+  · show ((x,y)^n).snd = y^n
+    sorry
+```
+
+In this example, we define a class representing monoids in the usual way: a type with an associative multiplication and a two-sided unit.
+Given a monoid `M`, we can define the power operation `M → ℕ → M` in the usual way by recursion on the second variable.
+This is done in the instance `MonoidToPow`.
+Now given two monoids `X` and `Y`, we can define a monoid structure on `X × Y` in the obvious way.
+But now we have two ways to construct a `Pow (X × Y) Nat` instance: we can either use the instance `MonoidToPow` on `X × Y`, or we can define it directly by exponentiating each component.
+The two are *not* definitionally equal, and so we would have a diamond if `bar` was declared as an instance.
+
+The way to resolve this is to bundle the data of `Pow` as part of the monoid class itself.
+```lean
+import Mathlib.Init.ZeroOne
+import Mathlib.Data.Prod.Basic
+
+class Monoid (X : Type) extends Mul X, One X, Pow X Nat where
+  assoc : ∀ (x y z : X), x * y * z = x * (y * z)
+  mul_one : ∀ (x : X), x * 1 = x
+  one_mul : ∀ (x : X), 1 * x = x
+  pow_zero : ∀ (x : X), x^0 = 1
+  pow_succ : ∀ (x : X) (n : Nat), x^(n+1) = x^n * x
+```
+
+Now, the `MonnoidToPow` instance is obtained simply by "forgetting" everything except for the `Pow` data.
+And since we have declared `Monoid` to extend `Pow`, the relevant instance is registered automatically.
+We can now declare the `Monoid (X × Y)` instance without any issues, by using the concrete definition of `pow` we wanted from `bar` above:
+```lean
+variable (X Y : Type) [Monoid X] [Monoid Y]
+
+instance : Monoid (X × Y) where
+  mul := fun (a,b) (c,d) => (a * c, b * d)
+  one := (1,1)
+  pow := fun (x,y) n => (x^n, y^n)
+  assoc := sorry
+  mul_one := sorry
+  one_mul := sorry
+  pow_zero := sorry
+  pow_succ := sorry
+```
+
+And finally, we can see that the analogues of `foo` and `bar` will not pose an issue since they are equal by definition:
+```lean
+def foo : Pow (X × Y) Nat := inferInstance
+
+def bar : Pow (X × Y) Nat where
+  pow := fun (x,y) n => (x^n, y^n)
+
+example : foo = bar := rfl
 ```
 
 ## Subobjects, Morphisms, Quotients, Universal properties.
