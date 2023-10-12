@@ -120,12 +120,10 @@ def bar : Pow (X × Y) Nat where
 
 example : foo = bar := rfl
 ```
-
 ## Subobjects, Morphisms, Quotients, Universal properties.
 
 When working with algebraic objects, there are a few things we might want to do.
-At an elementary level, we may want to actually do *algebra* with our algebraic objects.
-For example, we may want to solve for `x` in the equation `a * x = b` where `a x b : G` and `G` is a group.
+At an elementary level, we may want to actually do *algebra* with our algebraic objects, referring to manipulating equations involving elements of our algebraic structures.
 
 At a higher level we may want to *compare* algebraic objects.
 For example, we may want to know if two groups are *isomorphic*, and to talk about isomorphisms we need to talk about *morphisms*.
@@ -136,3 +134,56 @@ We may also want to compare subobjects and quotients, and talk about morphisms b
 Finally, we may want to construct new algebraic objects from old ones, for example by taking the product of two groups, or the direct sum of two modules.
 These objects satisfy *universal properties* that pin them down uniquely up to isomorphism.
 
+## Calculations
+
+Let's now discuss how to do calculations with algebraic objects.
+We'll use groups as an example, but the same techniques apply to other algebraic objects as well.
+
+For example, we may want to solve for `x` in the equation `a * x = b` where `a x b : G` and `G` is a group.
+We need to formulate this as a "theorem" and so we need to figure out what `x` should be ahead of time.
+We can then formulate a theorem in lean and prove it.
+Of course, in this case we know that `x = a⁻¹ * b`, so we can formulate the theorem as follows:
+```lean
+import Mathlib.Algebra.Group.Basic
+
+variable (G : Type) [Group G]
+
+example (a b x : G) (h : a * x = b) : x = a⁻¹ * b := by
+  sorry
+```
+We can prove this in a few ways.
+First, we can multiply both sides of the equation `h` by `a⁻¹` on the left.
+This can be done with `congr_arg`, or with the `apply_fun` tactic.
+This gives us a hypothesis of the form `a⁻¹ * (a * x) = a⁻¹ * b`, which we can simplify in one of various ways to reduce to our goal.
+Alternatively, we can rewrite the goal using `h` (backwards) and simplify the goal directly.
+Both approaches will be discussed in more detail during lecture.
+
+To illustrate another example of a calculation in lean, let's consider the following example.
+```lean
+example (a b c d e f : G) (h1 : a * b = c * d) (h2 : c * e = f) :
+  sorry
+```
+
+We will show how to prove this in class using the `conv` and/or `calc` environments.
+
+For certain kinds of algebraic objects we have specialized tactics that can be used to do such calculations.
+The main tactics here are:
+
+- `linarith` for linear (in)equalities
+- `group` for groups
+- `abel` for abelian groups
+- `ring` for commutative rings
+- `field_simp` for fields
+
+I'll give a few examples which illustrate how to use these tactics during lecture.
+Here are a few additional, more powerful tactics which you may want to explore:
+
+- `nlinarith` for some nonlinear (in)equalities
+- `polyrith` for proving some polynomial equalities
+- `gcongr` for "generalized congruence"
+- `congrm` a congruence-like tactic for proving certain relations
+
+Recall that you can use the `#help tactic foo` command to get the documentation on a tactic `foo`.
+
+In genreal, we can also train lean's simplifier and use `simp` to effectively simplify expressions in algebraic objects.
+I'll illustrate how to do this in class by implementing a variant of the `group` tactic using `simp`.
