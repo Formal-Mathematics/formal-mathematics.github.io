@@ -243,3 +243,167 @@ If `f : M ≃* N` is a multiplicative equivalence, then `f.symm` is the inverse 
 This will be a term of `N ≃* M`.
 To compose such equivalences, we can use `f.trans g`.
 To obtain the identity as an equvialence, we can use `MulEquiv.refl`.
+
+## Subobjects
+
+Let's now focus on the notion of subobjects, again taking groups as our primary example.
+A subgroup of a group `G` is defined in mathlib essentially as follows:
+```lean
+structure Subgroup (G : Type*) [Group G] where
+  carrier : Set G
+  mul_mem : ∀ a b, a ∈ carrier → b ∈ carrier → a * b ∈ carrier
+  one_mem : 1 ∈ carrier
+  inv_mem : ∀ a, a ∈ carrier → a⁻¹ ∈ carrier 
+```
+Namely, a subgroup of `G` consists of a subset `carrier : Set G` of `G` which is closed under multiplication, contains the unit, and is closed under inverses.
+In mathlib, this construction is again part of a hierarchy, and is thus rather defined as follows:
+```lean
+structure Subgroup (G : Type*) [Group G] extends Submonoid G where
+  /-- `G` is closed under inverses -/
+  inv_mem' {x} : x ∈ carrier → x⁻¹ ∈ carrier
+```
+I.e. a subgropu is a submonoid which is closed under multiplication.
+
+Just like in the case of morphisms where we have classes such as `MonoiHomClass` and `FunLike`, for subobjects, we have analogous classes such as `SubgroupClass` and `SetLike`.
+The `SubgroupClass` class extends `SubmonoidClass` which provides the API for being closed under multiplication and containing the unit, while `SubgroupClass` provides the API for being closed under inverses.
+The class `SetLike` provides a way to think about terms of `Subgroup G` and similar structures as subsets of `G`, and provides the API for this.
+For example, an instance of this class allows us to write 
+```lean
+example (G : Type*) [Group G] (H : Subgroup G) (g : G) : Prop := g ∈ H
+```
+Recall that subsets as defined as predicates, and that `g ∈ H` is notation for `H g`.
+
+The `SetLike` class also provides an instance of `CoeSort`, allowing us to consider terms of types with an instance of this class as types themselves.
+For example:
+```lean
+example (G : Type*) [Group G] (H : Subgroup G) (g : G) : Type _ := H
+```
+In general, if `H : Set G` for some type `G`, we can consider the *subtype* associated to `H`, which is defined essentially as a structure with two fields:
+```lean
+structure Subtype {G : Type*} (H : Set G) where
+  val : G
+  cond : val ∈ H
+```
+
+## Complete lattices and the order hierarchy
+
+The type of subobjects of an algebraic object is naturally a partial order, where the inequality is given by the associated inequality for the underlying sets.
+In fact, this is not just a partial order, but rather a *complete lattice*, which is a partial order where infima and suprema exist for any subset.
+This brings us into the so-called *order hierarchy* in mathlib, which is a hierarchy of typeclasses for partial orders, lattices, etc.
+Please feel free to dig around looking at the various classes in this hierarchy, but we will only discuss these as necessary in our class.
+
+For now, let's look at the definition of a complete lattice:
+```lean
+/-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
+class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
+  CompleteSemilatticeInf α, Top α, Bot α where
+  /-- Any element is less than the top one. -/
+  le_top : ∀ x : α, x ≤ ⊤
+  /-- Any element is more than the bottom one. -/
+  bot_le : ∀ x : α, ⊥ ≤ x
+```
+This extends two classes: `Lattice` and `CompleteSemilatticeSup`, which are defined as 
+```lean
+class CompleteSemilatticeSup (α : Type*) extends PartialOrder α, SupSet α where
+  /-- Any element of a set is less than the set supremum. -/
+  le_sSup : ∀ s, ∀ a ∈ s, a ≤ sSup s
+  /-- Any upper bound is more than the set supremum. -/
+  sSup_le : ∀ s a, (∀ b ∈ s, b ≤ a) → sSup s ≤ a
+
+class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
+```
+Digging further, the classes appearing above are defined as
+```lean
+class PartialOrder (α : Type u) extends Preorder α where
+  le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
+
+class SupSet (α : Type*) where
+  sSup : Set α → α
+
+class SemilatticeSup (α : Type u) extends Sup α, PartialOrder α where
+  /-- The supremum is an upper bound on the first argument -/
+  le_sup_left : ∀ a b : α, a ≤ a ⊔ b
+  /-- The supremum is an upper bound on the second argument -/
+  le_sup_right : ∀ a b : α, b ≤ a ⊔ b
+  /-- The supremum is the *least* upper bound -/
+  sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
+
+class SemilatticeInf (α : Type u) extends Inf α, PartialOrder α where
+  /-- The infimum is a lower bound on the first argument -/
+  inf_le_left : ∀ a b : α, a ⊓ b ≤ a
+  /-- The infimum is a lower bound on the second argument -/
+  inf_le_right : ∀ a b : α, a ⊓ b ≤ b
+  /-- The infimum is the *greatest* lower bound -/
+  le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
+```
+and digging further:
+```lean
+class Inf (α : Type u) where
+  /-- Greatest lower bound (`\glb` notation) -/
+  inf : α → α → α
+
+class Sup (α : Type u) where
+  /-- Least upper bound (`\lub` notation) -/
+  sup : α → α → α
+
+class Preorder (α : Type u) extends LE α, LT α where
+  le_refl : ∀ a : α, a ≤ a
+  le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
+  lt := fun a b => a ≤ b ∧ ¬b ≤ a
+  lt_iff_le_not_le : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
+
+class LE (α : Type u) where
+  /-- The less-equal relation: `x ≤ y` -/
+  le : α → α → Prop
+
+class LT (α : Type u) where
+  /-- The less-than relation: `x < y` -/
+  lt : α → α → Prop
+```
+
+## The complete lattice structure on subobjects
+
+Let's go back to the algebraic objects and their subobjects, and look at the complete lattice structure on the type of subobjects, again focusing on subgroups.
+Here is how this instance is defined in mathlib:
+```lean
+instance : CompleteLattice (Subgroup G) :=
+  { completeLatticeOfInf (Subgroup G) fun _s =>
+      IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
+    bot := ⊥
+    bot_le := fun S _x hx => (mem_bot.1 hx).symm ▸ S.one_mem
+    top := ⊤
+    le_top := fun _S x _hx => mem_top x
+    inf := (· ⊓ ·)
+    le_inf := fun _a _b _c ha hb _x hx => ⟨ha hx, hb hx⟩
+    inf_le_left := fun _a _b _x => And.left
+    inf_le_right := fun _a _b _x => And.right }
+```
+Here we use a trick: `completeLatticeOfInf`. 
+This construction has the following definition:
+```lean
+def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
+    (isGLB_sInf : ∀ s : Set α, IsGLB s (sInf s)) : CompleteLattice α :=
+  { H1, H2 with
+    bot := sInf univ
+    bot_le := fun x => (isGLB_sInf univ).1 trivial
+    top := sInf ∅
+    le_top := fun a => (isGLB_sInf ∅).2 <| by simp
+    sup := fun a b => sInf { x : α | a ≤ x ∧ b ≤ x }
+    inf := fun a b => sInf {a, b}
+    le_inf := fun a b c hab hac => by
+      apply (isGLB_sInf _).2
+      simp [*]
+    inf_le_right := fun a b => (isGLB_sInf _).1 <| mem_insert_of_mem _ <| mem_singleton _
+    inf_le_left := fun a b => (isGLB_sInf _).1 <| mem_insert _ _
+    sup_le := fun a b c hac hbc => (isGLB_sInf _).1 <| by simp [*]
+    le_sup_left := fun a b => (isGLB_sInf _).2 fun x => And.left
+    le_sup_right := fun a b => (isGLB_sInf _).2 fun x => And.right
+    le_sInf := fun s a ha => (isGLB_sInf s).2 ha
+    sInf_le := fun s a ha => (isGLB_sInf s).1 ha
+    sSup := fun s => sInf (upperBounds s)
+    le_sSup := fun s a ha => (isGLB_sInf (upperBounds s)).2 fun b hb => hb ha
+    sSup_le := fun s a ha => (isGLB_sInf (upperBounds s)).1 ha }
+```
+This is essentialy a way to construct a complete lattice structure on a type given just the data of infimums satisfying certain axioms.
+The *supremum* is then defined in terms of the infimum by saying that the supremum of a set `S` is the infimum of the set of upper bounds of `S`.
+In the case of subgroups, this is saying that we *define* the supremum of a collection of subgroups by taking the infimum (i.e. the intersection) of the family of all subgroups which contain all the subgroups in the collection.
