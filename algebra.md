@@ -187,3 +187,59 @@ Recall that you can use the `#help tactic foo` command to get the documentation 
 
 In genreal, we can also train lean's simplifier and use `simp` to effectively simplify expressions in algebraic objects.
 I'll illustrate how to do this in class by implementing a variant of the `group` tactic using `simp`.
+
+## Morphisms and Isomorphisms
+
+We have already discussed briefly how morphisms work in `mathlib`.
+Let's do a quick recap.
+First, just like the algebraic objects themselves, morphisms are organized in a hierarchy of typeclasses.
+For example, morphisms of monoids are defined as a structure extending `MulHom` and `OneHom`, and are endowed with an instance of the type class `MonoidHomClass`.
+Similarly, morphisms of rings are again a structure called `RingHom` which is endowed with an instance of `RingHomClass`, while `RingHomClass` extends `MonoidHomClass`.
+The `MonoidHomClass` encapsulates the API for monoid morphisms, which means that we can use this API for both `RingHom` and `MonoidHom` (and indeed any type that has an instance of `MonoidHomClass`).
+
+In practice, it's possible to *use* morphisms between algebraic objects without worrying about the details of the morphism typeclass hierarchy.
+One only needs to think about this if one wants to *define* a type of morphism between algebraic objects.
+In this case, one needs to decide which typeclass to extend, and which typeclass to use for the API, possibly even defining new typeclasses if necessary.
+
+For now I'll focus just on the types of morphisms and isomorphisms themselves.
+Let's focus on the case of groups.
+A group is a monoid, and a morphism of groups is just a morphism of monoids.
+Given two monoids `M` and `N`, a morphism of monoids is a function `M → N` which preserves the multiplication and the unit.
+In mathlib, this is essentially defined as a structure:
+
+```lean
+structure MonoidHom (M N : Type) [Mul M] [Mul N] [One M] [One N] where
+  toFun : M → N
+  map_mul : ∀ (x y : M), toFun (x * y) = toFun x * toFun y
+  map_one : toFun 1 = 1
+```
+If we look at the actual definition from mathlib, we see the following:
+```lean
+structure MonoidHom (M : Type*) (N : Type*) [MulOneClass M] [MulOneClass N] extends
+  OneHom M N, M →ₙ* N
+```
+Namely, we already have a structure `OneHom` for functions which preserve the unit.
+We also have a structure `MulHom` with notation `M →ₙ* N` for functions which preserve multiplication.
+
+We provide instances for `MonoidHom` of the class `MonoidHomClass`, which implies `FunLike`.
+The `MonoidHomClass` is a class that encapsulates the API for monoid morphisms, including lemmas such as `map_mul` and `map_one`.
+The `FunLike` class is a class that encapsulates the API for types which can be considered as functions in a faithful way, introducing the relevant extensionality lemmas, etc.
+This particular class also provides a `CoeFun` instance, which will allow us to write `f m` when `f` is a morphism from `M` to `N` and `m : M`.
+The type `MonoidHom M N` has the notation `M →* N`.
+
+Now what about isomorphisms?
+An isomorphism of monoids is a morphism which has an inverse.
+Well, it turns out that it suffices to just check that the map in the forward direction preserves multiplication.
+If `f` is a bijection between monoids which preserves multiplication then the fact that `f 1 * n = f 1 * f (f⁻¹ n) = f(1 * f⁻¹ n) = f(f⁻¹ n) = n` along with the injectivity of `f`, ensures that `f 1 = 1`.
+Because of this, an isomorphism between monoids is defined, in mathlib, as follows:
+```lean
+structure MulEquiv (M N : Type*) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
+```
+In other words, it's an equivalence between the underlying types whose underlying function preserves multiplication.
+The type of such multiplicative equivalences is denoted with the notation `M ≃* N`.
+This structure is endowed with an instance of `MulEquivClass`, which extends `MonoidHomClass` and `EquivClass`, allowing us to consider such equivalences as morphisms and as equivalences on the type level.
+
+If `f : M ≃* N` is a multiplicative equivalence, then `f.symm` is the inverse of `f` in the usual sense.
+This will be a term of `N ≃* M`.
+To compose such equivalences, we can use `f.trans g`.
+To obtain the identity as an equvialence, we can use `MulEquiv.refl`.
