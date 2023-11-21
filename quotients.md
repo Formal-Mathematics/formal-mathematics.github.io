@@ -86,5 +86,5 @@ def mulSetoid : Setoid M where
 
 ```
 
-This will allow us to construct a monoid structure on `Quotient (saturate r)` for an *arbitrary* relation `r`.
+This will allow us to construct a monoid structure on `Quotient (mulSetoid r)` for an *arbitrary* relation `r`.
 Stating and poving the universal property of this quotient will be left as an exercise (hint: state it in terms of `r`, not in terms of the saturation! (WHY?)).
