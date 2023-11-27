@@ -1,5 +1,5 @@
 ---
-title: Quotients 
+title: Categories 
 layout: default
 nav_order: 13
 --- 
