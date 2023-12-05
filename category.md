@@ -127,3 +127,62 @@ example (a b : X) (h : a ≤ b) : h.hom = .up (.up h) := rfl
 example (a b : X) (f : a ⟶ b) : a ≤ b := f.le
 example (a b : X) (f : a ⟶ b) : f.le = f.down.down := rfl
 ```
+
+# Functors
+
+A functor `F : C ⟶ D` between categories `C` and `D` consists of the following data:
+1. A function `F.obj : C -> D` which assigns to each object `X : C` an object `F.obj X : D`.
+2. A function `F.map : (X ⟶ Y) -> (F.obj X ⟶ F.obj Y)` for any `X Y : C`.
+this data must satisfy the following axioms:
+3. `F.map (𝟙 X) = 𝟙 (F.obj X)` for any `X : C`.
+4. `F.map (f ≫ g) = F.map f ≫ F.map g` for any `f : X ⟶ Y` and `g : Y ⟶ Z`.
+
+In mathlib, functors are modeled as structures, as follows:
+```lean
+structure Functor (C : Type u) [Category C] (D : Type u') [Category D] where
+  obj : C -> D
+  map : {X Y : C} -> (X ⟶ Y) -> (obj X ⟶ obj Y)
+  map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X)
+  map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g
+```
+The two fields `map_id` and `map_comp` are have a default value of `by aesop_cat`, so they can often be omitted when constructing a functor.
+The notation for the type of functors from `C` to `D` is `C ⥤ D`.
+And composition of two functors `F : C ⥤ D` and `G : D ⥤ E` is written `F ⋙ G`.
+The identity functor on `C` is written `𝟭 C`.
+
+## Examples
+
+During lecture we saw several examples of functors. 
+Please refer to the course repository for those examples.
+
+# Natural Transofmrations
+
+Given two functors `F G : C ⥤ D`, a natural transformation `α : F ⟶ G` consists of the following data:
+1. For each object `X : C`, a morphism `α.app X : F.obj X ⟶ G.obj X`.
+2. For each morphism `f : X ⟶ Y` in `C`, a naturality condition `α.naturality f : α.app X ≫ G.map f = F.map f ≫ α.app Y`.
+
+We again model natural transformations in Lean using structures:
+```lean
+structure NatTrans {C : Type u} [Category C] {D : Type u'} [Category D] (F G : C ⥤ D) where
+  app : ∀ X : C, F.obj X ⟶ G.obj X
+  naturality : ∀ {X Y : C} (f : X ⟶ Y), app X ≫ G.map f = F.map f ≫ app Y
+```
+As before, `naturality` has a default value of `by aesop_cat`, so it can often be omitted when constructing a natural transformation.
+The collection of all functors from `C` to `D` forms a category whose morphisms are natural transformations. 
+Thus, we usually use the standard "hom" notation for the type of natural transofmrations from `F` to `G`.
+That is, we write `F ⟶ G` for the type of natural transformations from `F` to `G` when `F` and `G` are functors.
+
+# Adjunctions
+
+In class we also talked about adjunctions between categories which consists of two functors `F : C ⥤ D` and `G : D ⥤ C` together natural transformations `η : 𝟭 C ⟶ F ⋙ G` and `ε : G ⋙ F ⟶ 𝟭 D` satisfying certain triangle conditions.
+Mathematically speaking, an adjunction between `F` and `G` consists of equivalences of types:
+```lean
+(F X ⟶ Y) ≃ (X ⟶ G Y)
+```
+for all `X : C` and `Y : D` which is *natural* in `X` and `Y`.
+
+In mathlib, adjunctions are defined slightly differently, but we can construct adjunctions from such equivalences using the constructor `CategoryTheory.Adjunction.mkOfHomEquiv`.
+This is the most convenient way to construct adjunctions in practice.
+
+In class we discussed an extended example showing that the forgetful functor from the category of monoids to the category of types is a right-adjoint whose left adjoint sends a type `X` to the free monoid on `X`.
+Please refer to the course repository for details about this example.
